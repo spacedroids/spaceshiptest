@@ -1,0 +1,11 @@
+fileFormatVersion: 2
+guid: 4fa402b0e15854f00b6a4db340a70036
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - EngineParticleSystem: {fileID: 100000, guid: ba17337f1e4894c8385ec79cf5a9fc33,
+      type: 2}
+  - particles: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
