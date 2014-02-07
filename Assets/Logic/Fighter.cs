@@ -19,10 +19,10 @@ public class Fighter : Ship {
 		angularVelocityController.myName = "Angular Velocity";
 		angularVelocityController.Kp = 5;
 		angularVelocityController.Kd = 7;
-		linearVelocityController = gameObject.AddComponent<PID> ();
-		linearVelocityController.myName = "Linear Velocity";
-		linearVelocityController.Kp = 5;
-		linearVelocityController.Kd = 10f;
+		linearDistanceController = gameObject.AddComponent<PID> ();
+		linearDistanceController.myName = "Linear Velocity";
+		linearDistanceController.Kp = 5;
+		linearDistanceController.Kd = 10f;
 		rotationZeroController = gameObject.AddComponent<PID> ();
 		rotationZeroController.myName = "Rotation Zero";
 		rotationZeroController.Kp = 3;
@@ -37,7 +37,7 @@ public class Fighter : Ship {
 		//Autopilot Settings
 		rotationAngleCoeff = 0.02f;
 		rotationVelocityCoeff = 0.2f;
-		linearVelocityCoeff = 1.4f;
+		linearDistanceCoeff = 1.4f;
 
 		base.Awake ();
 	}

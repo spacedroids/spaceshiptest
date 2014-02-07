@@ -2,9 +2,14 @@
 using System.Collections;
 
 public class Ship : MonoBehaviour {
-	
+
+	public enum States { Halting, Moving, Waiting }
+	protected States currentState;
+	protected States previousState;
+
 	protected PID angularVelocityController;
 	protected PID rotationZeroController;
+	protected PID linearDistanceController;
 	protected PID linearVelocityController;
 	
 	public Vector2 spawn;
@@ -12,7 +17,7 @@ public class Ship : MonoBehaviour {
 	public float rotationAngleCoeff = 0.02f;
 	public float rotationVelocityCoeff = 0.02f;
 	public float maxRotationThrust = 1f;
-	public float linearVelocityCoeff = 0.02f;
+	public float linearDistanceCoeff = 0.02f;
 	public float maxMainThrust = 1f;
 	public float mass = 1f;
 	//Autopilot
@@ -30,12 +35,26 @@ public class Ship : MonoBehaviour {
 	protected void thrust(Vector2 force) {
 		rigidbody2D.AddForce (force);
 	}
-	
+
+	public void setState(States newState) {
+		Debug.Log ("Chg: " + currentState + "->" + newState);
+		previousState = currentState;
+		currentState = newState;
+	}
+
+	public States getState() {
+		return currentState;
+	}
+
+	public bool notMoving() {
+		return rigidbody2D.velocity.magnitude == 0 && rigidbody2D.angularVelocity == 0;
+	}
+
 	protected void move(Vector2 target) {
 		target = target - (Vector2)transform.position;
 		float distance = target.magnitude;
-		float correctionForDistance = linearVelocityController.GetOutput(distance);
-		float force = correctionForDistance * linearVelocityCoeff;
+		float correctionForDistance = linearDistanceController.GetOutput(distance);
+		float force = correctionForDistance * linearDistanceCoeff;
 		force = Mathf.Clamp (force, -maxMainThrust, maxMainThrust);
 		Vector2 direction = target.normalized * force;
 //		Debug.Log ("Moving power: " + force + " dir: " + target.normalized);
@@ -46,7 +65,7 @@ public class Ship : MonoBehaviour {
 		Vector2 velocity = rigidbody2D.velocity;
 		float speed = velocity.magnitude;
 		float correctionForSpeed = linearVelocityController.GetOutput(speed);
-		float force = correctionForSpeed * linearVelocityCoeff;
+		float force = correctionForSpeed * linearDistanceCoeff;
 		force = Mathf.Clamp (force, -maxMainThrust, maxMainThrust);
 		Vector2 direction = -velocity.normalized * force;
 //				Debug.Log ("Moving power: " + force + " dir: " + target.normalized);
@@ -76,7 +95,7 @@ public class Ship : MonoBehaviour {
 		
 		rotate (error * direction, rotationAngleCoeff, angularVelocityController);
 		if (rotationDone (error)) {
-			rotationAutoPilot = false;
+			setState(States.Waiting);
 		}
 	}
 

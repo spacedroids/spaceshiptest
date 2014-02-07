@@ -7,6 +7,8 @@ using System.Collections;
 public class PID : MonoBehaviour
 {
 	public string myName;
+
+	public float multiplier = 1;
 	
 	public float Kp = 1;
 	public float Ki = 0;
@@ -73,6 +75,6 @@ public class PID : MonoBehaviour
 		D = (P - prevError) / deltaTime;
 		prevError = currentError;
 		
-		return P*Kp + I*Ki + D*Kd;
+		return multiplier * (P * Kp + I * Ki + D * Kd);
 	}
 }

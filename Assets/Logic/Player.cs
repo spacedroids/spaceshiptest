@@ -6,7 +6,7 @@ public class Player : Ship {
 	private Vector3 mousePosition;
 	private bool mouseClicked = false;
 	private Vector2 target;
-
+	
 	protected Vector2[] rotationThrusters = new Vector2[4];
 
 	protected override void Awake() {
@@ -15,14 +15,18 @@ public class Player : Ship {
 		angularVelocityController.myName = "Angular Velocity";
 		angularVelocityController.Kp = 5;
 		angularVelocityController.Kd = 7;
-		linearVelocityController = gameObject.AddComponent<PID> ();
-		linearVelocityController.myName = "Linear Velocity";
-		linearVelocityController.Kp = 5;
-		linearVelocityController.Kd = 10f;
+		linearDistanceController = gameObject.AddComponent<PID> ();
+		linearDistanceController.myName = "Distance Control";
+		linearDistanceController.Kp = 5;
+		linearDistanceController.Kd = 10f;
 		rotationZeroController = gameObject.AddComponent<PID> ();
 		rotationZeroController.myName = "Rotation Zero";
 		rotationZeroController.Kp = 3;
 		rotationZeroController.Kd = 0.3f;
+		linearVelocityController = gameObject.AddComponent<PID> ();
+		linearVelocityController.myName = "Velocity Control";
+		linearVelocityController.Kp = 3;
+		linearVelocityController.Kd = 0.3f;
 
 		spawn = new Vector2 (0f, 0f);
 		mass = 100000;
@@ -33,7 +37,7 @@ public class Player : Ship {
 		//Autopilot Settings
 		rotationAngleCoeff = 100;
 		rotationVelocityCoeff = 1000;
-		linearVelocityCoeff = 7000;
+		linearDistanceCoeff = 7000;
 
 		//Thrusters
 			//  ^
@@ -44,7 +48,9 @@ public class Player : Ship {
 		rotationThrusters [2] = new Vector2(0.49f, -0.4f);
 		rotationThrusters [3] = new Vector2(-0.49f, -0.4f);
 
-
+		//Initialize behavior state
+		currentState = States.Waiting;
+		previousState = States.Waiting;
 		base.Awake ();
 	}
 
@@ -52,8 +58,6 @@ public class Player : Ship {
 		base.Start ();
 	}
 
-
-	private bool allStop;
 	// Update is called once per frame
 	protected override void Update () {
 
@@ -71,9 +75,9 @@ public class Player : Ship {
 			} else if(Input.GetKeyDown("e")) {
 				rigidbody2D.AddTorque(manualTorque);
 			} else if(Input.GetKeyDown ("h")) {
-				allStop = true;
+				setState(States.Halting);
 			} else if(Input.GetKeyDown ("g")) {
-				allStop = false;
+				setState(States.Moving);
 			}
 		}
 
@@ -88,14 +92,18 @@ public class Player : Ship {
 
 	protected override void FixedUpdate() {
 		if (mouseClicked) {
+			setState(States.Moving);
 			rotationAutoPilot = true;
 			mouseClicked = false;
 		}
-		if (allStop) {
+		if (getState() == States.Halting) {
 			halt();
 			setRotationZero();
-		} else if (rotationAutoPilot) {
-			rotateTowards (target);
+			if(notMoving()) {
+				setState(States.Waiting);
+			}
+		} else if (getState() == States.Moving) {
+			setFacing (target);
 			move (target);
 		}
 		base.FixedUpdate ();

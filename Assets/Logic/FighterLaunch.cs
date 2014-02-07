@@ -6,7 +6,7 @@ public class FighterLaunch : MonoBehaviour {
 	public Transform fighterPrefab;
 
 	private Transform fighter;
-	private Transform[] squad = new Transform[30];
+	private Transform[] squad = new Transform[0];
 
 	// Use this for initialization
 	void Start () {
