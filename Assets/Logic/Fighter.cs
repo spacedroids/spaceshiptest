@@ -23,11 +23,16 @@ public class Fighter : Ship {
 		linearDistanceController.myName = "Linear Velocity";
 		linearDistanceController.Kp = 5;
 		linearDistanceController.Kd = 10f;
-		rotationZeroController = gameObject.AddComponent<PID> ();
-		rotationZeroController.myName = "Rotation Zero";
-		rotationZeroController.Kp = 3;
-		rotationZeroController.Kd = 0.3f;
-		
+		angularRotationController = gameObject.AddComponent<PID> ();
+		angularRotationController.myName = "Rotation Zero";
+		angularRotationController.Kp = 3;
+		angularRotationController.Kd = 0.3f;
+		linearVelocityController = gameObject.AddComponent<PID> ();
+		linearVelocityController.myName = "Velocity Control";
+		linearVelocityController.Kp = 3;
+		linearVelocityController.Kd = 0.3f;
+
+
 		spawn = new Vector2 (0f, 0f);
 		mass = 20;
 		rigidbody2D.mass = mass;
@@ -35,9 +40,15 @@ public class Fighter : Ship {
 		maxRotationThrust = 1;
 		maxMainThrust = 6;
 		//Autopilot Settings
-		rotationAngleCoeff = 0.02f;
-		rotationVelocityCoeff = 0.2f;
-		linearDistanceCoeff = 1.4f;
+//		rotationAngleCoeff = 0.02f;
+		angularVelocityController.multiplier = 0.02f;
+//		rotationVelocityCoeff = 0.2f;
+		angularRotationController.multiplier = 0.2f;
+//		linearDistanceCoeff = 1.4f;
+		linearDistanceController.multiplier = 1.4f;
+		//used for stopping all movement
+		linearVelocityController.multiplier = 1f;
+
 
 		base.Awake ();
 	}

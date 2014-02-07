@@ -15,18 +15,22 @@ public class Player : Ship {
 		angularVelocityController.myName = "Angular Velocity";
 		angularVelocityController.Kp = 5;
 		angularVelocityController.Kd = 7;
+		angularVelocityController.multiplier = 100;
 		linearDistanceController = gameObject.AddComponent<PID> ();
 		linearDistanceController.myName = "Distance Control";
 		linearDistanceController.Kp = 5;
 		linearDistanceController.Kd = 10f;
-		rotationZeroController = gameObject.AddComponent<PID> ();
-		rotationZeroController.myName = "Rotation Zero";
-		rotationZeroController.Kp = 3;
-		rotationZeroController.Kd = 0.3f;
+		linearDistanceController.multiplier = 7000;
+		angularRotationController = gameObject.AddComponent<PID> ();
+		angularRotationController.myName = "Rotation Zero";
+		angularRotationController.Kp = 3;
+		angularRotationController.Kd = 0.3f;
+		angularRotationController.multiplier = 1000;
 		linearVelocityController = gameObject.AddComponent<PID> ();
 		linearVelocityController.myName = "Velocity Control";
-		linearVelocityController.Kp = 3;
+		linearVelocityController.Kp = 10;
 		linearVelocityController.Kd = 0.3f;
+		linearVelocityController.multiplier = 140000;
 
 		spawn = new Vector2 (0f, 0f);
 		mass = 100000;
@@ -35,9 +39,7 @@ public class Player : Ship {
 		maxRotationThrust = 5000;
 		maxMainThrust = 30000;
 		//Autopilot Settings
-		rotationAngleCoeff = 100;
-		rotationVelocityCoeff = 1000;
-		linearDistanceCoeff = 7000;
+
 
 		//Thrusters
 			//  ^

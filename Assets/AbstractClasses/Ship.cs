@@ -8,16 +8,13 @@ public class Ship : MonoBehaviour {
 	protected States previousState;
 
 	protected PID angularVelocityController;
-	protected PID rotationZeroController;
+	protected PID angularRotationController;
 	protected PID linearDistanceController;
 	protected PID linearVelocityController;
 	
 	public Vector2 spawn;
 	//Engine Specs
-	public float rotationAngleCoeff = 0.02f;
-	public float rotationVelocityCoeff = 0.02f;
 	public float maxRotationThrust = 1f;
-	public float linearDistanceCoeff = 0.02f;
 	public float maxMainThrust = 1f;
 	public float mass = 1f;
 	//Autopilot
@@ -54,7 +51,7 @@ public class Ship : MonoBehaviour {
 		target = target - (Vector2)transform.position;
 		float distance = target.magnitude;
 		float correctionForDistance = linearDistanceController.GetOutput(distance);
-		float force = correctionForDistance * linearDistanceCoeff;
+		float force = correctionForDistance;
 		force = Mathf.Clamp (force, -maxMainThrust, maxMainThrust);
 		Vector2 direction = target.normalized * force;
 //		Debug.Log ("Moving power: " + force + " dir: " + target.normalized);
@@ -65,7 +62,7 @@ public class Ship : MonoBehaviour {
 		Vector2 velocity = rigidbody2D.velocity;
 		float speed = velocity.magnitude;
 		float correctionForSpeed = linearVelocityController.GetOutput(speed);
-		float force = correctionForSpeed * linearDistanceCoeff;
+		float force = correctionForSpeed;
 		force = Mathf.Clamp (force, -maxMainThrust, maxMainThrust);
 		Vector2 direction = -velocity.normalized * force;
 //				Debug.Log ("Moving power: " + force + " dir: " + target.normalized);
@@ -93,7 +90,7 @@ public class Ship : MonoBehaviour {
 			direction *= -1;
 		}
 		
-		rotate (error * direction, rotationAngleCoeff, angularVelocityController);
+		rotate(error * direction, angularVelocityController);
 		if (rotationDone (error)) {
 			setState(States.Waiting);
 		}
@@ -110,12 +107,12 @@ public class Ship : MonoBehaviour {
 	protected void setRotationZero() {
 //		Debug.Log ("zeroing: " + rigidbody2D.angularVelocity);
 		float angularVelocityError = -rigidbody2D.angularVelocity;
-		rotate (angularVelocityError, rotationVelocityCoeff, rotationZeroController);
+		rotate(angularVelocityError, angularRotationController);
 	}
 
-	protected void rotate(float error, float power, PID controller) {
+	protected void rotate(float error, PID controller) {
 		float torqueCorrectionForAngularVelocity = controller.GetOutput(error);
-		float torque = power * torqueCorrectionForAngularVelocity;
+		float torque = torqueCorrectionForAngularVelocity;
 		torque = Mathf.Clamp (torque, -maxRotationThrust, maxRotationThrust);
 //		Debug.Log ("Error: " + error + " force: " + torque);
 		rigidbody2D.AddTorque(torque);
