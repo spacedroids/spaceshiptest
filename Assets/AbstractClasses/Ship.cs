@@ -38,7 +38,18 @@ public class Ship : MonoBehaviour {
 		float force = correctionForDistance * linearVelocityCoeff;
 		force = Mathf.Clamp (force, -maxMainThrust, maxMainThrust);
 		Vector2 direction = target.normalized * force;
-		Debug.Log ("Moving power: " + force + " dir: " + target.normalized);
+//		Debug.Log ("Moving power: " + force + " dir: " + target.normalized);
+		rigidbody2D.AddForce (direction);
+	}
+
+	protected void halt() {
+		Vector2 velocity = rigidbody2D.velocity;
+		float speed = velocity.magnitude;
+		float correctionForSpeed = linearVelocityController.GetOutput(speed);
+		float force = correctionForSpeed * linearVelocityCoeff;
+		force = Mathf.Clamp (force, -maxMainThrust, maxMainThrust);
+		Vector2 direction = -velocity.normalized * force;
+//				Debug.Log ("Moving power: " + force + " dir: " + target.normalized);
 		rigidbody2D.AddForce (direction);
 	}
 
@@ -78,7 +89,7 @@ public class Ship : MonoBehaviour {
 	}
 
 	protected void setRotationZero() {
-		Debug.Log ("zeroing: " + rigidbody2D.angularVelocity);
+//		Debug.Log ("zeroing: " + rigidbody2D.angularVelocity);
 		float angularVelocityError = -rigidbody2D.angularVelocity;
 		rotate (angularVelocityError, rotationVelocityCoeff, rotationZeroController);
 	}
@@ -87,7 +98,7 @@ public class Ship : MonoBehaviour {
 		float torqueCorrectionForAngularVelocity = controller.GetOutput(error);
 		float torque = power * torqueCorrectionForAngularVelocity;
 		torque = Mathf.Clamp (torque, -maxRotationThrust, maxRotationThrust);
-		Debug.Log ("Error: " + error + " force: " + torque);
+//		Debug.Log ("Error: " + error + " force: " + torque);
 		rigidbody2D.AddTorque(torque);
 	}
 	

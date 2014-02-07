@@ -24,9 +24,9 @@ public class FighterEngine : Engine {
 	}
 
 	public void animate() {
-		if (particle.particleSystem.isStopped) {
-			particle.particleSystem.Play ();
-		}
+//		if (particle.particleSystem.isStopped) {
+//			particle.particleSystem.Play ();
+//		}
 	}
 
 

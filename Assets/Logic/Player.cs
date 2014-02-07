@@ -53,6 +53,7 @@ public class Player : Ship {
 	}
 
 
+	private bool allStop;
 	// Update is called once per frame
 	protected override void Update () {
 
@@ -69,6 +70,10 @@ public class Player : Ship {
 				rigidbody2D.AddTorque(-manualTorque);
 			} else if(Input.GetKeyDown("e")) {
 				rigidbody2D.AddTorque(manualTorque);
+			} else if(Input.GetKeyDown ("h")) {
+				allStop = true;
+			} else if(Input.GetKeyDown ("g")) {
+				allStop = false;
 			}
 		}
 
@@ -78,6 +83,7 @@ public class Player : Ship {
 			//Translate clicked location from screen coords into world coords and make it relative to ship's position
 			target = Camera.main.ScreenToWorldPoint(mousePosition);
 		}
+
 	}
 
 	protected override void FixedUpdate() {
@@ -85,12 +91,12 @@ public class Player : Ship {
 			rotationAutoPilot = true;
 			mouseClicked = false;
 		}
-		if (rotationAutoPilot) {
+		if (allStop) {
+			halt();
+			setRotationZero();
+		} else if (rotationAutoPilot) {
 			rotateTowards (target);
 			move (target);
-		} else {
-			move (target);
-			setRotationZero();
 		}
 		base.FixedUpdate ();
 	}
